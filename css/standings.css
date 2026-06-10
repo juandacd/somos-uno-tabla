@@ -1,0 +1,296 @@
+/* =====================================================================
+   SOMOS UNO · TABLA MUNDIAL — Página pública (standings)
+   ===================================================================== */
+
+/* ---------- HERO / estado de la jornada ---------- */
+.hero{
+  position:relative;
+  padding:clamp(26px,5vw,52px) 0 clamp(18px,3vw,28px);
+}
+.hero .eyebrow{
+  display:block;
+  margin-bottom:16px;
+}
+.hero__title{
+  font-family:var(--font-display);
+  font-size:clamp(46px,12vw,128px);
+  line-height:.82; letter-spacing:-.01em;
+  text-transform:uppercase; margin:0;
+  padding-top:.12em;
+  text-shadow:0 6px 0 rgba(0,0,0,.18);
+}
+.hero__title .accent{
+  -webkit-text-stroke:2px var(--white); color:transparent;
+}
+.hero__sub{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;
+  margin-top:18px;
+}
+.hero__tag{
+  font-weight:900; text-transform:uppercase; letter-spacing:.06em;
+  font-size:clamp(12px,1.6vw,15px);
+  color:rgba(255,255,255,.7);
+}
+
+/* progreso de semanas */
+.weeks-strip{
+  display:flex; gap:8px; margin-top:22px; flex-wrap:wrap;
+}
+.weeks-strip__item{
+  position:relative;
+  display:flex; flex-direction:column; gap:5px;
+  padding:11px 16px; border-radius:14px; min-width:84px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1);
+}
+.weeks-strip__item.is-done{ background:rgba(255,255,255,.12); }
+.weeks-strip__item.is-live{
+  background:linear-gradient(135deg, var(--c-red), var(--c-orange));
+  border-color:transparent;
+}
+.weeks-strip__k{
+  font-family:var(--font-display); font-size:22px; letter-spacing:.02em;
+}
+.weeks-strip__s{
+  font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(255,255,255,.7);
+}
+.weeks-strip__item.is-live .weeks-strip__s{ color:rgba(255,255,255,.95); }
+.weeks-strip__item.is-upcoming{ opacity:.5; }
+
+/* ---------- TABLA / BOARD ---------- */
+.board{ padding-bottom:60px; }
+
+.board-head{
+  display:none;
+  align-items:center; gap:14px;
+  padding:0 22px 10px;
+  font-size:11px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+  color:rgba(255,255,255,.45);
+}
+.board-head__weeks{ display:flex; gap:8px; }
+.board-head__weeks span{ width:58px; text-align:center; }
+.board-head__total{ width:120px; text-align:right; }
+
+/* fila de equipo */
+.row{
+  position:relative;
+  display:grid;
+  grid-template-columns:auto auto 1fr auto;
+  grid-template-areas:
+    "rank flag name total"
+    "weeks weeks weeks weeks";
+  align-items:center;
+  gap:10px 14px;
+  padding:16px 18px;
+  margin-bottom:12px;
+  border-radius:var(--radius);
+  background:linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.045));
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .18s ease, border-color .2s ease, background .2s ease;
+  opacity:0; transform:translateY(16px);
+}
+.row.in{ opacity:1; transform:none; }
+.row:hover{ transform:translateY(-3px); border-color:rgba(255,255,255,.28); }
+/* franja de color del equipo */
+.row::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:7px;
+  background:var(--team-a);
+}
+.row__rank{
+  grid-area:rank;
+  font-family:var(--font-display);
+  font-size:clamp(26px,5vw,38px); line-height:1;
+  width:1.5ch; text-align:center; color:rgba(255,255,255,.85);
+}
+.row__flag{
+  grid-area:flag;
+  width:clamp(48px,11vw,62px); height:clamp(48px,11vw,62px);
+  border-radius:50%;
+  background-size:170%; background-position:center;
+  border:2.5px solid var(--team-a);
+  box-shadow:0 4px 12px rgba(0,0,0,.45), inset 0 0 0 2px rgba(255,255,255,.25);
+  flex:none;
+}
+.row__name{ grid-area:name; min-width:0; }
+.row__country{
+  font-family:var(--font-display);
+  font-size:clamp(22px,5vw,30px); line-height:.95;
+  text-transform:uppercase; letter-spacing:.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.row__group{
+  font-size:clamp(11px,2.6vw,13px); font-weight:700;
+  color:rgba(255,255,255,.6); margin-top:3px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.row__total{
+  grid-area:total; text-align:right; line-height:1;
+}
+.row__pts{
+  font-family:var(--font-display);
+  font-size:clamp(26px,6vw,40px);
+  font-variant-numeric:tabular-nums;
+}
+.row__pts-l{
+  display:block; font-size:9px; font-weight:800; letter-spacing:.18em;
+  text-transform:uppercase; color:rgba(255,255,255,.5); margin-top:2px;
+}
+
+/* chips de semanas */
+.row__weeks{ grid-area:weeks; display:flex; gap:7px; flex-wrap:wrap; }
+.wk{
+  display:flex; flex-direction:column; align-items:center; gap:1px;
+  min-width:52px; padding:6px 8px; border-radius:11px;
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.08);
+}
+.wk__k{ font-size:9px; font-weight:800; letter-spacing:.1em; color:rgba(255,255,255,.5); }
+.wk__v{ font-family:var(--font-display); font-size:16px; font-variant-numeric:tabular-nums; }
+.wk__v.zero{ color:rgba(255,255,255,.28); }
+.wk--live{ background:rgba(228,35,30,.22); border-color:rgba(228,35,30,.5); }
+.wk--live .wk__k{ color:#ffb3b0; }
+.wk--upcoming .wk__v{ color:rgba(255,255,255,.25); }
+/* badge bono participación */
+.wk__bonus{
+  margin-top:2px; font-size:8px; font-weight:900; letter-spacing:.04em;
+  color:var(--ink); background:var(--c-gold);
+  padding:1px 5px; border-radius:6px;
+}
+
+/* ---------- LÍDER ---------- */
+.row--leader{
+  grid-template-areas:
+    "tag tag tag tag"
+    "rank flag name total"
+    "weeks weeks weeks weeks";
+  padding:20px;
+  background:
+    linear-gradient(140deg, rgba(244,192,34,.28), rgba(255,224,122,.08) 55%, rgba(244,192,34,.18)),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border:1.5px solid rgba(244,192,34,.55);
+  box-shadow:0 26px 60px -22px rgba(244,192,34,.45), var(--shadow-card);
+}
+.row--leader::before{ width:9px; background:linear-gradient(var(--c-gold), var(--c-gold-2)); }
+/* brillo que recorre */
+.row--leader::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(105deg, transparent 35%, rgba(255,255,255,.45) 50%, transparent 65%);
+  transform:translateX(-120%);
+  animation:shimmer 4.5s ease-in-out 1.2s infinite;
+}
+@keyframes shimmer{
+  0%{ transform:translateX(-120%);}
+  55%,100%{ transform:translateX(120%);}
+}
+.row--leader .row__rank{ color:var(--c-gold-2); text-shadow:0 0 22px rgba(244,192,34,.6); }
+.row--leader .row__pts{ color:var(--c-gold-2); text-shadow:0 0 24px rgba(244,192,34,.5); }
+.row--leader .row__country{ font-size:clamp(26px,7vw,46px); }
+.row--leader .row__flag{
+  width:clamp(58px,13vw,76px); height:clamp(58px,13vw,76px);
+  border-color:var(--c-gold);
+  box-shadow:0 6px 18px rgba(244,192,34,.45), inset 0 0 0 2px rgba(255,255,255,.3);
+}
+
+.leader-tag{
+  grid-area:tag;
+  display:inline-flex; align-items:center; gap:8px; align-self:start;
+  width:max-content;
+  font-weight:900; text-transform:uppercase; letter-spacing:.14em;
+  font-size:12px; padding:6px 13px; border-radius:999px;
+  color:var(--ink); background:linear-gradient(135deg,var(--c-gold),var(--c-gold-2));
+  box-shadow:0 6px 18px -6px rgba(244,192,34,.8);
+}
+.leader-tag .ball{ animation:spin 6s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg);} }
+
+/* pulso dorado del líder */
+.row--leader{ animation:leaderPulse 3.4s ease-in-out infinite; }
+@keyframes leaderPulse{
+  0%,100%{ box-shadow:0 26px 60px -22px rgba(244,192,34,.4), 0 0 0 0 rgba(244,192,34,.0); }
+  50%{ box-shadow:0 26px 64px -20px rgba(244,192,34,.6), 0 0 0 4px rgba(244,192,34,.16); }
+}
+
+/* ---------- skeleton de carga ---------- */
+.row--skeleton{ opacity:1; transform:none; cursor:default; pointer-events:none; }
+.row--skeleton::before{ background:rgba(255,255,255,.12); }
+.sk{
+  display:inline-block; border-radius:8px;
+  background:linear-gradient(90deg, rgba(255,255,255,.06) 25%, rgba(255,255,255,.16) 50%, rgba(255,255,255,.06) 75%);
+  background-size:200% 100%;
+  animation:sk-shine 1.3s ease-in-out infinite;
+}
+@keyframes sk-shine{ 0%{ background-position:200% 0; } 100%{ background-position:-200% 0; } }
+.sk--rank{ width:1.4ch; height:30px; border-radius:6px; }
+.sk--flag{ border-radius:50%; background-color:rgba(255,255,255,.08); }
+.sk--line{ height:18px; display:block; }
+.sk--wk{ width:52px; height:38px; border-radius:11px; }
+.sk--total{ width:90px; height:34px; display:inline-block; }
+@media (min-width:760px){ .sk--wk{ width:58px; } }
+
+/* ---------- detalle (poster) expandible ---------- */
+.row__detail{ display:none; }
+
+.modal{
+  position:fixed; inset:0; z-index:100; display:none;
+  align-items:center; justify-content:center; padding:18px;
+  background:rgba(8,6,5,.78); backdrop-filter:blur(6px);
+}
+.modal.open{ display:flex; }
+.modal__card{
+  position:relative; width:min(760px,100%);
+  border-radius:20px; overflow:hidden;
+  background:var(--ink-soft); box-shadow:var(--shadow-pop);
+  animation:pop .35s cubic-bezier(.2,.9,.3,1.3);
+}
+@keyframes pop{ from{ transform:scale(.92); opacity:0; } to{ transform:none; opacity:1; } }
+.modal__poster{ width:100%; aspect-ratio:16/9; object-fit:cover; }
+.modal__body{ padding:20px 22px 24px; }
+.modal__country{ font-family:var(--font-display); font-size:clamp(30px,7vw,52px); text-transform:uppercase; line-height:.9; }
+.modal__group{ color:rgba(255,255,255,.65); font-weight:700; margin-top:6px; }
+.modal__stats{ display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; }
+.modal__stat{ flex:1 1 120px; background:rgba(255,255,255,.07); border-radius:14px; padding:12px 14px; }
+.modal__stat b{ display:block; font-family:var(--font-display); font-size:26px; }
+.modal__stat span{ font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.55); }
+.modal__close{
+  position:absolute; top:12px; right:12px; z-index:2;
+  width:40px; height:40px; border-radius:50%; border:none;
+  background:rgba(0,0,0,.5); color:#fff; font-size:20px; font-weight:700;
+  display:grid; place-items:center;
+}
+
+/* ---------- footer ---------- */
+.site-footer{
+  border-top:1px solid rgba(255,255,255,.08);
+  padding:30px 0 50px; text-align:center;
+}
+.site-footer img{ width:42px; margin:0 auto 14px; opacity:.85; }
+.site-footer p{ color:rgba(255,255,255,.5); font-size:13px; font-weight:600; letter-spacing:.02em; }
+.site-footer .hash{ color:var(--c-orange); font-weight:900; letter-spacing:.04em; margin-top:6px; }
+
+/* ---------- responsive: pantalla grande / proyector ---------- */
+@media (min-width:760px){
+  .board-head{ display:flex; }
+  .row{
+    grid-template-columns:auto auto 1fr auto auto;
+    grid-template-areas:"rank flag name weeks total";
+    gap:18px; padding:18px 22px;
+  }
+  .row--leader{
+    grid-template-areas:
+      "rank flag name weeks total"
+      "tag  tag  tag  tag   tag";
+    padding:24px 26px;
+  }
+  .leader-tag{ margin-top:4px; }
+  .row__weeks{ flex-wrap:nowrap; }
+  .wk{ min-width:58px; }
+}
+@media (min-width:1100px){
+  .row__weeks{ gap:8px; }
+  .wk{ min-width:62px; padding:7px 10px; }
+  .wk__v{ font-size:18px; }
+}

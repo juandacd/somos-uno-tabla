@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel de Líderes · Somos Uno Medellín</title>
+<meta name="theme-color" content="#14110F">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="deco-26" style="top:4%; right:-6%; font-size:48vw;">26</div>
+
+<!-- ================= LOGIN ================= -->
+<section class="login" id="login">
+  <form class="login__card" id="loginForm" novalidate>
+    <img class="login__logo" src="assets/logo-somos-uno.png" alt="Somos Uno">
+    <h1 class="login__title">Panel de<br>Líderes</h1>
+    <p class="login__sub">Ingresa los resultados de cada fin de semana.</p>
+
+    <div class="field">
+      <label for="email">Correo</label>
+      <input type="email" id="email" placeholder="lider@somosuno.co" autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="pass">Contraseña</label>
+      <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <p class="login__err" id="loginErr"></p>
+    <button type="submit" class="btn btn--accent btn--block">Ingresar</button>
+    <p class="login__hint">Solo para líderes · ingresa la contraseña del panel</p>
+  </form>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="dash" id="dash">
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <img class="brand__logo" src="assets/logo-somos-uno.png" alt="Somos Uno">
+      <span class="brand__txt">
+        <span class="brand__name">Somos Uno</span>
+        <span class="brand__sub">Panel de líderes</span>
+      </span>
+    </a>
+    <span class="header-spacer"></span>
+    <a class="pill" href="index.html" style="background:rgba(255,255,255,.06)">Ver tabla ↗</a>
+  </header>
+
+  <div class="wrap">
+    <div class="dash__intro">
+      <h1 id="weekTitle">Resultados · Semana 2</h1>
+      <p>Elige la semana, ordena las selecciones según el juego de tarima y marca quién gana la participación.</p>
+    </div>
+
+    <!-- tabs -->
+    <div class="wtabs" id="wtabs"><!-- inyectado --></div>
+
+    <!-- paso 1: orden -->
+    <div class="section-label">
+      <span class="num">1</span> Orden del juego de tarima
+      <span class="hint">— arrastra ⠿ o usa ▲▼ (1° = 1000 · 2° = 700 · 3° = 500 · resto = 200)</span>
+    </div>
+    <ol class="order-list" id="orderList"><!-- inyectado --></ol>
+
+    <!-- paso 2: participación -->
+    <div class="section-label">
+      <span class="num">2</span> Bono de participación
+      <span class="hint">— +500 pts a la selección elegida esta semana</span>
+    </div>
+    <div class="part-grid" id="partGrid"><!-- inyectado --></div>
+
+    <!-- guardar -->
+    <div class="save-bar">
+      <button class="btn btn--accent" id="saveBtn">💾 Guardar semana</button>
+      <button class="btn btn--ghost" id="resetBtn">↻ Recargar nube</button>
+      <span class="total-note">Los cambios se guardan en Google Sheets y aparecen en la tabla pública en ~30s.</span>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"><span>Guardado</span></div>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

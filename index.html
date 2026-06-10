@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tabla Mundial · Somos Uno Medellín</title>
+<meta name="theme-color" content="#14110F">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/standings.css">
+</head>
+<body>
+
+<div class="bg-stage"></div>
+<div class="deco-26" style="top:6%; right:-4%; font-size:46vw;">26</div>
+<div class="deco-26" style="bottom:-8%; left:-6%; font-size:40vw;">26</div>
+
+<!-- ================= HEADER ================= -->
+<header class="site-header">
+  <a class="brand" href="index.html">
+    <img class="brand__logo" src="assets/logo-somos-uno.png" alt="Somos Uno">
+    <span class="brand__txt">
+      <span class="brand__name">Somos Uno</span>
+      <span class="brand__sub">Medellín · Tabla Mundial</span>
+    </span>
+  </a>
+  <span class="header-spacer"></span>
+  <span class="pill"><span class="live-dot"></span> En vivo</span>
+  <a class="pill" href="admin.html" style="background:rgba(255,255,255,.06)">Admin</a>
+</header>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="wrap hero">
+    <span class="eyebrow">Encuentro de Naciones · '26</span>
+    <h1 class="hero__title">Tabla de<br><span class="accent">Posiciones</span></h1>
+    <div class="hero__sub">
+      <span class="pill" id="liveWeekPill" style="background:linear-gradient(135deg,var(--c-red),var(--c-orange));border-color:transparent">
+        <span class="live-dot" style="background:#fff;box-shadow:none"></span> Semana 2 en curso
+      </span>
+      <span class="hero__tag">6 selecciones · 4 fines de semana</span>
+    </div>
+
+    <div class="weeks-strip">
+      <div class="weeks-strip__item is-done">
+        <span class="weeks-strip__k">S1</span><span class="weeks-strip__s">Jugada</span>
+      </div>
+      <div class="weeks-strip__item is-live">
+        <span class="weeks-strip__k">S2</span><span class="weeks-strip__s">En vivo</span>
+      </div>
+      <div class="weeks-strip__item is-upcoming">
+        <span class="weeks-strip__k">S3</span><span class="weeks-strip__s">Próxima</span>
+      </div>
+      <div class="weeks-strip__item is-upcoming">
+        <span class="weeks-strip__k">S4</span><span class="weeks-strip__s">Final</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BOARD ================= -->
+  <section class="wrap board">
+    <div class="board-head">
+      <span style="width:1.5ch;text-align:center">#</span>
+      <span style="flex:1">Selección</span>
+      <span class="board-head__weeks"><span>S1</span><span>S2</span><span>S3</span><span>S4</span></span>
+      <span class="board-head__total">Total</span>
+    </div>
+    <div id="board"><!-- filas inyectadas por standings.js --></div>
+
+    <p id="boardNote" style="text-align:center;color:rgba(255,255,255,.4);font-size:13px;font-weight:600;margin-top:18px">
+      Toca una selección para ver su póster y estadísticas · La tabla se actualiza sola cada 30 segundos
+    </p>
+  </section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <img src="assets/logo-somos-uno.png" alt="Somos Uno">
+    <p>Somos Uno Medellín · Jóvenes</p>
+    <p class="hash">#SomosUno · #EncuentroDeNaciones26</p>
+  </div>
+</footer>
+
+<!-- ================= MODAL DETALLE ================= -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal__card">
+    <button class="modal__close" aria-label="Cerrar">✕</button>
+    <img class="modal__poster" alt="">
+    <div class="modal__body">
+      <div class="modal__country"></div>
+      <div class="modal__group"></div>
+      <div class="modal__stats"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/standings.js"></script>
+</body>
+</html>
