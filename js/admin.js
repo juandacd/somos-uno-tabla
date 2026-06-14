@@ -124,8 +124,11 @@
         <span class="pp">+500</span>
         <input type="radio" name="part" value="${t.id}" ${participation===t.id?'checked':''}>
       </label>`).join('');
-    wrap.querySelectorAll('.part-opt').forEach(o => o.addEventListener('click', () => {
-      // permite des-seleccionar tocando la misma opción
+    wrap.querySelectorAll('.part-opt').forEach(o => o.addEventListener('click', (e) => {
+      // Evitar doble-toggle: al hacer click en un <label> que envuelve un <input type="radio">,
+      // el navegador también hace click en el radio, que burbujea de vuelta al label.
+      // Con toggle eso cancelaría la selección. Ignoramos el click que viene del radio.
+      if (e.target.tagName === 'INPUT') return;
       participation = (participation === o.dataset.id) ? null : o.dataset.id;
       renderPart(); renderList();
     }));
