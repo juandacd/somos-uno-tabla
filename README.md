@@ -136,6 +136,19 @@ Luego abre `http://localhost:5500/index.html` y `http://localhost:5500/admin.htm
 > **¿Cambiar la "semana en curso"?** Abre la pestaña **`Config`** del Sheet y cambia el
 > valor de `currentWeek` (1–4). El hero y los chips "EN VIVO" se ajustan solos.
 
+### 🎯 Semanas especiales (puntos personalizados)
+
+Si una semana **no** se reparte por puesto (ej. dos selecciones empatadas, o un
+reparto distinto por la actividad de esa noche):
+
+1. Activa el switch **"Puntos personalizados"** arriba de la lista.
+2. Escribe a mano los puntos de cada selección (puedes repetir valores → empates).
+3. Marca igual la selección que gana la participación **(+500)**.
+4. **💾 Guardar semana.** El total = puntos escritos + 500 si tiene la participación.
+
+Esos puntos se guardan en la columna **`Puntos`** del Sheet (como JSON) y mandan
+sobre el puntaje por puesto solo en esa semana.
+
 ---
 
 ## 🗂️ Estructura del Sheet

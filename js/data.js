@@ -109,12 +109,12 @@ const SU = {
 
   /* ---- ESCRITURA hacia Google Sheets ----
      Usa text/plain para evitar el preflight CORS de Apps Script. */
-  async saveResults({ week, order, participation, currentWeek }){
+  async saveResults({ week, order, participation, points, currentWeek }){
     const url = this.apiUrl();
     if(!url) throw new Error('No has configurado apiUrl en js/config.js');
     const body = JSON.stringify({
       password: this._cfg.adminPassword || '',
-      week, order, participation, currentWeek,
+      week, order, participation, points: points || null, currentWeek,
     });
     const res = await fetch(url, {
       method:'POST',
@@ -128,12 +128,29 @@ const SU = {
     return data;
   },
 
-  /* puntos de una semana para cada equipo => { teamId: {pos, base, bonus, total} } */
+  /* puntos de una semana para cada equipo => { teamId: {pos, base, bonus, total} }
+     Dos modos:
+     · Normal: los puntos salen del puesto (SCORING.byPosition).
+     · Personalizado (semana especial): si res.points existe, esos puntos
+       mandan (permite empates, repartos distintos, etc.). */
   weekPoints(weekKey){
     const res = this.getResults()[weekKey];
     const map = {};
     TEAMS.forEach(t => { map[t.id] = { pos:null, base:0, bonus:0, total:0 }; });
-    if(!res || !res.order) return map;
+    if(!res) return map;
+
+    if(res.points){
+      const orderList = (res.order && res.order.length) ? res.order : TEAMS.map(t=>t.id);
+      TEAMS.forEach(t => {
+        const base = Math.max(0, +res.points[t.id] || 0);
+        const bonus = (res.participation === t.id) ? SCORING.participation : 0;
+        const idx = orderList.indexOf(t.id);
+        map[t.id] = { pos: idx>=0 ? idx+1 : null, base, bonus, total: base+bonus };
+      });
+      return map;
+    }
+
+    if(!res.order) return map;
     res.order.forEach((id, i) => {
       const base = SCORING.byPosition[i] ?? 0;
       const bonus = (res.participation === id) ? SCORING.participation : 0;

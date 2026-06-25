@@ -8,15 +8,19 @@
    Estructura de hojas que usa (créala con setup() una sola vez):
 
    Hoja "Resultados"
-   ┌────────┬──────┬──────┬──────┬──────┬──────┬──────┬───────────────┐
-   │ Semana │ Pos1 │ Pos2 │ Pos3 │ Pos4 │ Pos5 │ Pos6 │ Participacion │
-   ├────────┼──────┼──────┼──────┼──────┼──────┼──────┼───────────────┤
-   │ S1     │ ...  │ ...  │ ...  │ ...  │ ...  │ ...  │ ...           │
-   │ S2     │      │      │      │      │      │      │               │
-   │ S3     │      │      │      │      │      │      │               │
-   │ S4     │      │      │      │      │      │      │               │
-   └────────┴──────┴──────┴──────┴──────┴──────┴──────┴───────────────┘
-   (Pos1..Pos6 = id de la selección en ese puesto. Celdas vacías = no jugada.)
+   ┌────────┬──────┬─────┬──────┬───────────────┬────────┐
+   │ Semana │ Pos1 │ ... │ Pos6 │ Participacion │ Puntos │
+   ├────────┼──────┼─────┼──────┼───────────────┼────────┤
+   │ S1     │ ...  │ ... │ ...  │ ...           │        │
+   │ S2     │      │     │      │               │        │
+   │ S3     │      │     │      │               │        │
+   │ S4     │      │     │      │               │        │
+   └────────┴──────┴─────┴──────┴───────────────┴────────┘
+   · Pos1..Pos6  = id de la selección en ese puesto. Celdas vacías = no jugada.
+   · Participacion = id que gana el bono de +500 esa semana.
+   · Puntos = (opcional) JSON con puntos personalizados por equipo para
+     semanas especiales, ej: {"portugal":700,"brasil":700,...}. Si está
+     lleno, manda sobre el puntaje por puesto.
 
    Hoja "Config"
    ┌─────────────┬───────┐
@@ -60,7 +64,7 @@ function doPost(e) {
       return json({ ok: false, error: 'Semana no válida.' });
     }
 
-    writeWeek(body.week, body.order || [], body.participation || '');
+    writeWeek(body.week, body.order || [], body.participation || '', body.points || null);
 
     if (body.currentWeek) setCurrentWeek(body.currentWeek);
 
@@ -89,13 +93,23 @@ function readResults() {
     }
     var part = String(rows[r][7] || '').trim();
 
-    // Semana sin orden completo => se considera "no jugada" (null)
-    out[week] = order.length === 6 ? { order: order, participation: part || null } : null;
+    // Columna 9 (índice 8): puntos personalizados en JSON (opcional)
+    var pointsRaw = String(rows[r][8] || '').trim();
+    var points = null;
+    if (pointsRaw) { try { points = JSON.parse(pointsRaw); } catch (e) { points = null; } }
+
+    if (points) {
+      // Semana especial: se considera jugada por tener puntos personalizados
+      out[week] = { order: order, participation: part || null, points: points };
+    } else {
+      // Semana normal sin orden completo => "no jugada" (null)
+      out[week] = order.length === 6 ? { order: order, participation: part || null } : null;
+    }
   }
   return out;
 }
 
-function writeWeek(week, order, participation) {
+function writeWeek(week, order, participation, points) {
   var sheet = ss().getSheetByName(SHEET_RESULTS);
   var rows = sheet.getDataRange().getValues();
   var targetRow = -1;
@@ -111,7 +125,8 @@ function writeWeek(week, order, participation) {
   var line = [week];
   for (var i = 0; i < 6; i++) line.push(order[i] || '');
   line.push(participation || '');
-  sheet.getRange(targetRow, 1, 1, 8).setValues([line]);
+  line.push(points ? JSON.stringify(points) : '');
+  sheet.getRange(targetRow, 1, 1, 9).setValues([line]);
 }
 
 /* ---------------------------------------------------------------------
@@ -167,17 +182,17 @@ function setup() {
   // Hoja Resultados
   var res = book.getSheetByName(SHEET_RESULTS) || book.insertSheet(SHEET_RESULTS);
   res.clear();
-  res.getRange(1, 1, 1, 8).setValues([
-    ['Semana', 'Pos1', 'Pos2', 'Pos3', 'Pos4', 'Pos5', 'Pos6', 'Participacion']
+  res.getRange(1, 1, 1, 9).setValues([
+    ['Semana', 'Pos1', 'Pos2', 'Pos3', 'Pos4', 'Pos5', 'Pos6', 'Participacion', 'Puntos']
   ]);
-  res.getRange(2, 1, 4, 8).setValues([
+  res.getRange(2, 1, 4, 9).setValues([
     // Semana 1 de ejemplo (puedes borrarla y volverla a poner desde el panel)
-    ['S1', 'colombia', 'brasil', 'espana', 'argentina', 'portugal', 'francia', ''],
-    ['S2', '', '', '', '', '', '', ''],
-    ['S3', '', '', '', '', '', '', ''],
-    ['S4', '', '', '', '', '', '', ''],
+    ['S1', 'colombia', 'brasil', 'espana', 'argentina', 'portugal', 'francia', '', ''],
+    ['S2', '', '', '', '', '', '', '', ''],
+    ['S3', '', '', '', '', '', '', '', ''],
+    ['S4', '', '', '', '', '', '', '', ''],
   ]);
-  res.getRange(1, 1, 1, 8).setFontWeight('bold');
+  res.getRange(1, 1, 1, 9).setFontWeight('bold');
   res.setFrozenRows(1);
 
   // Hoja Config

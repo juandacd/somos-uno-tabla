@@ -9,6 +9,15 @@
   let currentWeek = 'S2';     // semana en edición
   let order = [];             // arreglo de team.id 1°→6°
   let participation = null;   // team.id ganador del bono
+  let customMode = false;     // true = puntos personalizados (semana especial)
+  let customPoints = {};      // { team.id: puntos } cuando customMode está activo
+
+  /* puntos base que se mostrarán/usarán para un equipo en su posición actual */
+  function baseFor(id, i){
+    return customMode
+      ? (customPoints[id] != null ? +customPoints[id] : 0)
+      : (SU.SCORING.byPosition[i] ?? 0);
+  }
 
   /* ---------------- LOGIN ---------------- */
   function initLogin(){
@@ -52,12 +61,33 @@
   function loadWeek(w){
     currentWeek = w;
     const res = SU.getResults()[w];
-    order = res && res.order ? [...res.order] : SU.TEAMS.map(t=>t.id);
+    order = res && res.order && res.order.length ? [...res.order] : SU.TEAMS.map(t=>t.id);
     participation = res ? res.participation : null;
+
+    // ¿la semana ya tenía puntos personalizados guardados?
+    customMode = !!(res && res.points);
+    customPoints = {};
+    if(customMode){
+      SU.TEAMS.forEach(t => { customPoints[t.id] = +res.points[t.id] || 0; });
+    }
+    document.getElementById('customToggle').checked = customMode;
+
     document.getElementById('weekTitle').textContent = 'Resultados · ' + WEEK_LABEL[w];
     document.querySelectorAll('.wtab').forEach(b => b.classList.toggle('active', b.dataset.w===w));
     renderList();
     renderPart();
+  }
+
+  /* alterna entre puntos por puesto y puntos personalizados */
+  function toggleCustom(on){
+    customMode = on;
+    if(customMode){
+      // pre-llena con los puntos actuales por puesto para que el líder los edite
+      order.forEach((id, i) => {
+        if(customPoints[id] == null) customPoints[id] = SU.SCORING.byPosition[i] ?? 0;
+      });
+    }
+    renderList();
   }
 
   /* ---------------- LISTA ORDENABLE ---------------- */
@@ -65,8 +95,15 @@
     const ul = document.getElementById('orderList');
     ul.innerHTML = order.map((id, i) => {
       const t = SU.team(id);
-      const base = SU.SCORING.byPosition[i] ?? 0;
+      const base = baseFor(id, i);
       const bonus = participation===id ? SU.SCORING.participation : 0;
+      const ptsCell = customMode
+        ? `<span class="oitem__pts oitem__pts--edit">
+             <input class="pts-input" type="number" inputmode="numeric" min="0" step="50"
+               data-id="${id}" value="${base}" aria-label="Puntos de ${t.name}">
+             <small>PTS${bonus?' · +500':''}</small>
+           </span>`
+        : `<span class="oitem__pts">${fmt(base+bonus)}<small>PTS${bonus?' · +500':''}</small></span>`;
       return `<li class="oitem" draggable="true" data-id="${id}"
           style="--team-a:${t.colors.a}">
         <span class="drag-handle" title="Arrastra para reordenar">⠿</span>
@@ -76,7 +113,7 @@
           <span class="oitem__country">${t.name}</span>
           <span class="oitem__group">${t.group}</span>
         </span>
-        <span class="oitem__pts">${fmt(base+bonus)}<small>PTS${bonus?' · +500':''}</small></span>
+        ${ptsCell}
         <span class="oitem__moves">
           <button class="mvbtn up" ${i===0?'disabled':''} aria-label="Subir">▲</button>
           <button class="mvbtn dn" ${i===order.length-1?'disabled':''} aria-label="Bajar">▼</button>
@@ -87,6 +124,18 @@
   }
 
   function wireList(ul){
+    // inputs de puntos personalizados
+    ul.querySelectorAll('.pts-input').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const v = parseInt(inp.value, 10);
+        customPoints[inp.dataset.id] = isNaN(v) ? 0 : Math.max(0, v);
+      });
+      // evita que arrastrar dentro del input mueva la fila
+      inp.addEventListener('click', e => e.stopPropagation());
+      inp.closest('.oitem').addEventListener('dragstart', e => {
+        if(e.target === inp){ e.preventDefault(); }
+      });
+    });
     // botones subir/bajar
     ul.querySelectorAll('.up').forEach((b,i)=> b.addEventListener('click',e=>{
       e.stopPropagation(); const idx = idxOf(b); if(idx>0) swap(idx,idx-1);
@@ -140,10 +189,16 @@
     const original = btn.textContent;
     btn.disabled = true; btn.textContent = '⏳ Guardando…';
     try{
+      let points = null;
+      if(customMode){
+        points = {};
+        order.forEach(id => { points[id] = +customPoints[id] || 0; });
+      }
       await SU.saveResults({
         week: currentWeek,
         order: [...order],
         participation: participation || null,
+        points,
       });
       buildTabs();
       document.querySelectorAll('.wtab').forEach(b => b.classList.toggle('active', b.dataset.w===currentWeek));
@@ -181,5 +236,6 @@
     initLogin();
     document.getElementById('saveBtn').addEventListener('click', save);
     document.getElementById('resetBtn').addEventListener('click', reload);
+    document.getElementById('customToggle').addEventListener('change', e => toggleCustom(e.target.checked));
   });
 })();
