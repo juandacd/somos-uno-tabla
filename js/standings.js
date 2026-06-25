@@ -25,8 +25,10 @@
 
   /* --- chip de semana --- */
   function weekChip(wk, p, status){
-    const cls = status === 'live' ? 'wk--live' : status === 'upcoming' ? 'wk--upcoming' : '';
-    const val = status === 'upcoming'
+    // una semana con puntos siempre muestra sus puntos, aunque esté marcada como futura
+    const empty = status === 'upcoming' && !p.total;
+    const cls = status === 'live' ? 'wk--live' : empty ? 'wk--upcoming' : '';
+    const val = empty
       ? '<span class="wk__v zero">—</span>'
       : `<span class="wk__v${p.total===0?' zero':''}">${p.total? fmt(p.total):'—'}</span>`;
     const bonus = p.bonus ? `<span class="wk__bonus">+500</span>` : '';

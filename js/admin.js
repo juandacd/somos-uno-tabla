@@ -194,11 +194,16 @@
         points = {};
         order.forEach(id => { points[id] = +customPoints[id] || 0; });
       }
+      // si guardo una semana más nueva, avanzo la "semana en curso" (editar
+      // semanas anteriores NO la mueve hacia atrás)
+      const weekIdx = SU.SCORING.weeks.indexOf(currentWeek) + 1;
+      const advance = weekIdx > SU.SCORING.currentWeek ? weekIdx : undefined;
       await SU.saveResults({
         week: currentWeek,
         order: [...order],
         participation: participation || null,
         points,
+        currentWeek: advance,
       });
       buildTabs();
       document.querySelectorAll('.wtab').forEach(b => b.classList.toggle('active', b.dataset.w===currentWeek));
